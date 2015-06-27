@@ -11,9 +11,9 @@
     class Update extends Insertion
     {
 
-        public function update($column, $value, $variable = null)
+        public function update($column, $value, $variable = null, $type = null)
         {
-            parent::add($column, $value, $variable);
+            parent::add($column, $value, $variable, $type);
         }
 
     }

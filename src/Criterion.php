@@ -30,6 +30,8 @@
 
         protected $value;
 
+        protected $type;
+
         protected $operator = self::EQUALS;
 
         protected $variable;
@@ -74,12 +76,14 @@
          * @param string $variable[optional]
          * @param string $additional[optional]
          * @param string $special[optional]
+         * @param mixed $type[optional]
          */
-        public function __construct($column, $value = '', $operator = self::EQUALS, $variable = null, $additional = null, $special = null)
+        public function __construct($column, $value = '', $operator = self::EQUALS, $variable = null, $additional = null, $special = null, $type = null)
         {
             if ($column !== '') {
                 $this->column = $column;
                 $this->value = $value;
+                $this->type = $type;
                 if ($operator !== null) {
                     if ($operator == self::IN && !$value) {
                         throw new Exception('Cannot use an empty value for WHERE IN criteria');
@@ -154,6 +158,22 @@
         public function setValue($value)
         {
             $this->value = $value;
+        }
+
+        /**
+         * @return mixed
+         */
+        public function getType()
+        {
+            return $this->type;
+        }
+
+        /**
+         * @param mixed $type
+         */
+        public function setType($type)
+        {
+            $this->type = $type;
         }
 
         /**

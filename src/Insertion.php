@@ -81,14 +81,14 @@
 
             foreach ($this->criteria as $criterion) {
                 $this->columns[$criterion->getColumn()] = $criterion->getColumn();
-                $this->values[$criterion->getColumn()] = $criterion->getValue();
+                $this->values[$criterion->getColumn()] = array('type' => $criterion->getType(), 'value' => $criterion->getValue());
                 $this->variables[$criterion->getColumn()] = $criterion->getVariable();
             }
         }
 
-        public function add($column, $value, $variable = null)
+        public function add($column, $value, $variable = null, $type = null)
         {
-            $this->criteria[$column] = new Criterion($column, $value, null, $variable);
+            $this->criteria[$column] = new Criterion($column, $value, null, $variable, null, null, $type);
         }
 
     }

@@ -43,17 +43,18 @@
          * Add a specified value
          *
          * @param mixed $value
+         * @param mixed $type
          * @param bool $force_null
          */
-        protected function addValue($value, $force_null = false)
+        protected function addValue($value, $type = null, $force_null = false)
         {
             if (is_array($value)) {
                 foreach ($value as $single_value) {
-                    $this->addValue($single_value);
+                    $this->addValue($single_value, $type, $force_null);
                 }
             } else {
                 if ($value !== null || $force_null) {
-                    $this->values[] = $this->query->getDatabaseValue($value);
+                    $this->values[] = array('type' => $type, 'value' => $this->query->getDatabaseValue($value));
                 }
             }
         }
@@ -192,7 +193,7 @@
                         $criteria->setQuery($this->query);
                         $sql_parts[] = $criteria->getSql();
                         foreach ($criteria->getValues() as $value) {
-                            $this->query->addValue($value);
+                            $this->query->addValue($value['value'], $value['type']);
                         }
                     }
 
@@ -341,7 +342,7 @@
                 $prefix = Query::quoteIdentifier($column);
                 $updates[] = $prefix . Criterion::EQUALS . '?';
 
-                $this->addValue($value, true);
+                $this->addValue($value['value'], $value['type'], true);
             }
             $sql = 'UPDATE ' . $this->getTable()->getSqlTableName() . ' SET ' . implode(', ', $updates);
             return $sql;
@@ -390,7 +391,7 @@
                     $values[] = '@' . $insertion->getVariable($column);
                 } else {
                     $values[] = '?';
-                    $this->addValue($value, true);
+                    $this->addValue($value['value'], $value['type'], true);
                 }
             }
 

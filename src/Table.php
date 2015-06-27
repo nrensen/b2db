@@ -710,9 +710,9 @@
 
                 if ($id) {
                     $changed = true;
-                    $update->add($column['name'], $value);
+                    $update->add($column['name'], $value, $column['type']);
                 } elseif ($column['name'] != $this->getIdColumn()) {
-                    $insertion->add($column['name'], $value);
+                    $insertion->add($column['name'], $value, $column['type']);
                 }
             }
 

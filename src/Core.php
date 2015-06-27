@@ -293,6 +293,7 @@
             $time = Core::getDebugTime() - $previous_time;
             $sql = $statement->printSQL();
             $values = ($statement->getQuery() instanceof Criteria) ? $statement->getQuery()->getValues() : array();
+            $values = array_map(function($v) { return $v['value']; }, $values);
 
             $backtrace = debug_backtrace();
             $trace = self::getRelevantDebugBacktraceElement($backtrace);
