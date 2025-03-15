@@ -14,10 +14,11 @@
          * @param string $column
          * @param mixed $value
          * @param string|null $variable
+         * @param string|null $type
          */
-        public function update(string $column, $value, string $variable = null): void
+        public function update(string $column, $value, string $variable = null, string $type = null): void
         {
-            $this->add($column, $value, $variable);
+            $this->add($column, $value, $variable, $type);
         }
 
     }

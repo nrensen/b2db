@@ -86,7 +86,36 @@
                 $previous_time = Core::getDebugTime();
             }
 
-            $res = $this->statement->execute($values);
+            for ($i = 0; $i < sizeof($values); $i++) {
+                $value = $values[$i]['value'];
+                $type = $values[$i]['type'];
+                $pdotype = false;
+                switch ($type) {
+                case 'boolean':
+                    $pdotype = \PDO::PARAM_BOOL;
+                    break;
+                case 'integer':
+                    $pdotype = \PDO::PARAM_INT;
+                    break;
+                case 'blob':
+                    $pdotype = \PDO::PARAM_LOB;
+                    break;
+                case 'string':
+                    $pdotype = \PDO::PARAM_STR;
+                    break;
+                default:
+                    if (is_int($value))
+                        $pdotype = \PDO::PARAM_INT;
+                    elseif(is_bool($value))
+                        $pdotype = \PDO::PARAM_BOOL;
+                    elseif(is_null($value))
+                        $pdotype = \PDO::PARAM_NULL;
+                    elseif(is_string($value))
+                        $pdotype = \PDO::PARAM_STR;
+                }
+                $this->statement->bindValue($i+1, $value, $pdotype);
+            }
+            $res = $this->statement->execute();
 
             if (!$res) {
                 $error = $this->statement->errorInfo();
@@ -199,6 +228,7 @@
             $str = '';
             $str .= $this->query->getSql();
             foreach ($this->query->getValues() as $val) {
+                $val = $val['value'];
                 if (is_null($val)) {
                     $val = 'null';
                 } elseif (!is_int($val)) {

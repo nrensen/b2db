@@ -134,6 +134,7 @@
             if ($this->query instanceof Criteria) {
                 $str .= $this->query->getSQL();
                 foreach ($this->query->getValues() as $val) {
+                    $val = $val['value'];
                     if (!is_int($val)) {
                         $val = '\'' . $val . '\'';
                     }

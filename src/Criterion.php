@@ -40,6 +40,8 @@
 
         protected string $special;
 
+        protected string $type;
+
         protected string $sql;
 
         /**
@@ -79,8 +81,9 @@
          * @param ?string $variable[optional]
          * @param ?string $additional[optional]
          * @param ?string $special[optional]
+         * @param ?string $type[optional]
          */
-        public function __construct(string $column, $value = '', string $operator = self::EQUALS, string $variable = null, string $additional = null, string $special = null)
+        public function __construct(string $column, $value = '', string $operator = self::EQUALS, string $variable = null, string $additional = null, string $special = null, string $type = null)
         {
             if ($column !== '') {
                 $this->column = $column;
@@ -100,6 +103,9 @@
                 }
                 if ($special) {
                     $this->special = $special;
+                }
+                if ($type) {
+                    $this->type = $type;
                 }
             }
 
@@ -145,6 +151,22 @@
         public function getValue()
         {
             return $this->value;
+        }
+
+        /**
+         * @return mixed
+         */
+        public function getType()
+        {
+            return $this->type;
+        }
+
+        /**
+         * @param mixed $type
+         */
+        public function setType($type)
+        {
+            $this->type = $type;
         }
 
         /**

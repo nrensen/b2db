@@ -160,13 +160,7 @@
 
             foreach ($this->criteria as $criteria) {
                 foreach ($criteria->getValues() as $value) {
-                    if (is_array($value)) {
-                        foreach ($value as $single_value) {
-                            $values[] = $single_value;
-                        }
-                    } else {
-                        $values[] = $value;
-                    }
+                    $values[] = $value;
                 }
             }
 
@@ -198,15 +192,16 @@
          * Add a value to the value container
          *
          * @param mixed $value
+         * @param ?string $type
          */
-        public function addValue($value): void
+        public function addValue($value, $type = null): void
         {
             if (is_array($value)) {
                 foreach ($value as $single_value) {
-                    $this->addValue($single_value);
+                    $this->addValue($single_value, $type);
                 }
             } else if ($value !== null) {
-                $this->values[] = $this->getDatabaseValue($value);
+                $this->values[] = array('type' => $type, 'value' => $this->getDatabaseValue($value));
             }
         }
 
@@ -274,14 +269,15 @@
          * @param ?string $variable
          * @param ?string $additional
          * @param ?string $special
+         * @param ?string $type
          *
          * @return Criteria
          */
-        public function where($column, $value = '', string $operator = Criterion::EQUALS, string $variable = null, string $additional = null, string $special = null): Criteria
+        public function where($column, $value = '', string $operator = Criterion::EQUALS, string $variable = null, string $additional = null, string $special = null, string $type = null): Criteria
         {
             if (!$column instanceof Criteria) {
                 $criteria = new Criteria();
-                $criteria->where($column, $value, $operator, $variable, $additional, $special);
+                $criteria->where($column, $value, $operator, $variable, $additional, $special, $type);
                 $column = $criteria;
             }
 
@@ -300,16 +296,17 @@
          * @param ?string $variable
          * @param ?string $additional
          * @param ?string $special
+         * @param ?string $type
          *
          * @return Criteria
          */
-        public function and($column, $value = '', string $operator = Criterion::EQUALS, string $variable = null, string $additional = null, string $special = null): Criteria
+        public function and($column, $value = '', string $operator = Criterion::EQUALS, string $variable = null, string $additional = null, string $special = null, string $type = null): Criteria
         {
             if (isset($this->mode) && $this->mode === self::MODE_OR) {
                 throw new Exception('Cannot combine two selection types (AND/OR) in the same Query. Use sub-criteria instead');
             }
 
-            $criteria = $this->where($column, $value, $operator, $variable, $additional, $special);
+            $criteria = $this->where($column, $value, $operator, $variable, $additional, $special, $type);
 
             $this->mode = self::MODE_AND;
 
@@ -325,10 +322,11 @@
          * @param ?string $variable
          * @param ?string $additional
          * @param ?string $special
+         * @param ?string $type
          *
          * @return Criteria
          */
-        public function or($column, $value = '', string $operator = Criterion::EQUALS, string $variable = null, string $additional = null, string $special = null): Criteria
+        public function or($column, $value = '', string $operator = Criterion::EQUALS, string $variable = null, string $additional = null, string $special = null, string $type = null): Criteria
         {
             if (isset($this->mode) && $this->mode === self::MODE_AND) {
                 throw new Exception('Cannot combine two selection types (AND/OR) in the same Query. Use sub-criteria instead');
@@ -338,7 +336,7 @@
                 throw new Exception('Cannot combine more than one HAVING clause in the same Query. Use multiple sub-criteria instead');
             }
 
-            $criteria = $this->where($column, $value, $operator, $variable, $additional, $special);
+            $criteria = $this->where($column, $value, $operator, $variable, $additional, $special, $type);
 
             $this->mode = self::MODE_OR;
 

@@ -46,8 +46,15 @@
 
             foreach ($this->parts as $part) {
                 if ($part instanceof Criterion) {
-                    if ($part->getValue() !== null) {
-                        $values[] = $part->getValue();
+                    $value = $part->getValue();
+                    $type = $part->getType();
+                    if ($value !== null) {
+                        if (!is_array($value)) {
+                            $value = array($value);
+                        }
+                        foreach ($value as $v) {
+                            $values[] = array('type' => $type, 'value' => $v);
+                        }
                     }
                 } else {
                     foreach ($part->getValues() as $value) {
@@ -62,7 +69,7 @@
         }
 
         /**
-         * Adds a "where" part to the criteria
+         * Adds an "and" part to the criteria
          *
          * @param mixed  $column
          * @param mixed  $value
@@ -70,13 +77,14 @@
          * @param ?string $variable
          * @param ?string $additional
          * @param ?string $special
+         * @param ?string $type
          *
          * @return Criteria
          */
-        public function where($column, $value = '', string $operator = Criterion::EQUALS, string $variable = null, string $additional = null, string $special = null): self
+        public function where($column, $value = '', string $operator = Criterion::EQUALS, string $variable = null, string $additional = null, string $special = null, string $type = null): self
         {
             if (!$column instanceof CriterionProvider) {
-                $column = new Criterion($column, $value, $operator, $variable, $additional, $special);
+                $column = new Criterion($column, $value, $operator, $variable, $additional, $special, $type);
             }
 
             $this->parts[] = $column;
@@ -93,13 +101,14 @@
          * @param ?string $variable
          * @param ?string $additional
          * @param ?string $special
+         * @param ?string $type
          *
          * @return Criteria
          */
-        public function having($column, $value = '', string $operator = Criterion::EQUALS, string $variable = null, string $additional = null, string $special = null): self
+        public function having($column, $value = '', string $operator = Criterion::EQUALS, string $variable = null, string $additional = null, string $special = null, string $type = null): self
         {
             if (!$column instanceof CriterionProvider) {
-                $column = new Criterion($column, $value, $operator, $variable, $additional, $special);
+                $column = new Criterion($column, $value, $operator, $variable, $additional, $special, $type);
             }
 
             if (count($this->parts)) {
@@ -121,16 +130,17 @@
          * @param ?string $variable
          * @param ?string $additional
          * @param ?string $special
+         * @param ?string $type
          *
          * @return Criteria
          */
-        public function and($column, $value = '', string $operator = Criterion::EQUALS, string $variable = null, string $additional = null, string $special = null): self
+        public function and($column, $value = '', string $operator = Criterion::EQUALS, string $variable = null, string $additional = null, string $special = null, string $type = null): self
         {
             if (isset($this->mode) && $this->mode === Query::MODE_OR) {
                 throw new Exception('Cannot combine two selection types (AND/OR) in the same Criteria. Use multiple sub-criteria instead');
             }
 
-            $this->where($column, $value, $operator, $variable, $additional, $special);
+            $this->where($column, $value, $operator, $variable, $additional, $special, $type);
 
             $this->mode = Query::MODE_AND;
 
@@ -146,16 +156,17 @@
          * @param ?string $variable
          * @param ?string $additional
          * @param ?string $special
+         * @param ?string $type
          *
          * @return Criteria
          */
-        public function or($column, $value = null, string $operator = Criterion::EQUALS, string $variable = null, string $additional = null, string $special = null): self
+        public function or($column, $value = null, string $operator = Criterion::EQUALS, string $variable = null, string $additional = null, string $special = null, string $type = null): self
         {
             if (isset($this->mode) && $this->mode === Query::MODE_AND) {
                 throw new Exception('Cannot combine two selection types (AND/OR) in the same Criteria. Use multiple sub-criteria instead');
             }
 
-            $this->where($column, $value, $operator, $variable, $additional, $special);
+            $this->where($column, $value, $operator, $variable, $additional, $special, $type);
 
             $this->mode = Query::MODE_OR;
 

@@ -91,7 +91,7 @@
                 $column = $criterion->getColumn();
 
                 $this->columns[$column] = $column;
-                $this->values[$column] = $criterion->getValue();
+                $this->values[$column] = array('type' => $criterion->getType(), 'value' => $criterion->getValue());
                 $this->variables[$column] = $criterion->getVariable();
             }
         }
@@ -100,10 +100,11 @@
          * @param string $column
          * @param mixed $value
          * @param ?string $variable
+         * @param ?string $type
          */
-        public function add(string $column, $value, string $variable = null): void
+        public function add(string $column, $value, string $variable = null, string $type = null): void
         {
-            $this->criteria[$column] = new Criterion($column, $value, Criterion::EQUALS, $variable);
+            $this->criteria[$column] = new Criterion($column, $value, Criterion::EQUALS, $variable, null, null, $type);
         }
 
     }
